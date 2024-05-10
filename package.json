@@ -1,0 +1,24 @@
+{
+  "name": "bienesraices_mvc",
+  "version": "1.0.0",
+  "description": "mi primer proyecto nodejs",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Katopy/node_mvc.git"
+  },
+  "keywords": [
+    "Tailwind",
+    "MVC",
+    "MySQL"
+  ],
+  "author": "Katherine Garcia",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Katopy/node_mvc/issues"
+  },
+  "homepage": "https://github.com/Katopy/node_mvc#readme"
+}
