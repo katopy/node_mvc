@@ -3,8 +3,10 @@
   "version": "1.0.0",
   "description": "mi primer proyecto nodejs",
   "main": "index.js",
+  "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node ./index.js",
+    "server": "nodemon index.js"
   },
   "repository": {
     "type": "git",
@@ -20,5 +22,11 @@
   "bugs": {
     "url": "https://github.com/Katopy/node_mvc/issues"
   },
-  "homepage": "https://github.com/Katopy/node_mvc#readme"
+  "homepage": "https://github.com/Katopy/node_mvc#readme",
+  "dependencies": {
+    "express": "^4.19.2"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.0"
+  }
 }
