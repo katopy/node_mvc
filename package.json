@@ -6,7 +6,8 @@
   "type": "module",
   "scripts": {
     "start": "node ./index.js",
-    "server": "nodemon index.js"
+    "server": "nodemon index.js",
+    "css": "postcss public/css/tailwind.css -o public/css/app.css --watch"
   },
   "repository": {
     "type": "git",
@@ -24,10 +25,23 @@
   },
   "homepage": "https://github.com/Katopy/node_mvc#readme",
   "dependencies": {
+    "2": "^3.0.0",
+    "bcrypt": "^5.1.1",
+    "dotenv": "^16.4.5",
     "express": "^4.19.2",
-    "pug": "^3.0.2"
+    "express-validator": "^7.0.1",
+    "lodash": "^4.17.21",
+    "lodash.set": "^4.3.2",
+    "mysql2": "^3.9.7",
+    "nodemailer": "^6.9.13",
+    "pug": "^3.0.2",
+    "sequelize": "^6.37.3"
   },
   "devDependencies": {
-    "nodemon": "^3.1.0"
+    "autoprefixer": "^10.4.19",
+    "nodemon": "^3.1.0",
+    "postcss": "^8.4.38",
+    "postcss-cli": "^11.0.0",
+    "tailwindcss": "^3.4.3"
   }
 }
