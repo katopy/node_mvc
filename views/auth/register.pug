@@ -1,0 +1,38 @@
+extends ../layout/index
+
+block contenido
+    .py-10
+        h1.text-4xl.my-10.font-extrabold.text-center Real
+            span.font-normal Estate
+        h2.text-center.text-3xl.font-extrabold= pagina
+
+        if errors
+            div(class="max-w-md mx-auto my-10")
+                each error in errors 
+                    p.bg-red-600.text-white.uppercase.text.xs.text-center.p-2.mb-1.font-bold= error.msg
+
+
+        .mt-8.mx-auto.max-w-md
+            .bg-white.py-8.px-4.shadow
+                form.space-y-5(method="POST", action="/auth/register" novalidate)
+                    div         
+                        label.block.text-sm.uppercase.text-gray-500.mb-2.font-bold(for="name") Tu Nombre
+                        input#name.w-full.px-4.py-2.border.border-gray-300.rounded-md.placeholder-gray-400(placeholder="Tu Nombre" type="text" name="name" value= user ? user.name : '')
+
+                    div         
+                        label.block.text-sm.uppercase.text-gray-500.mb-2.font-bold(for="email") Email de Registro 
+                        input#email.w-full.px-4.py-2.border.border-gray-300.rounded-md.placeholder-gray-400(placeholder="Tu Email" type="email" name="email" value= user ? user.email : '')
+
+                    div     
+                        label.block.text-sm.uppercase.text-gray-500.mb-2.font-bold(for="password") Tu Password
+                        input#password.w-full.px-4.py-2.border.border-gray-300.rounded-md.placeholder-gray-400(placeholder="Tu Password" type="password" name="password")
+                    
+                    div 
+                        label.block.text-sm.uppercase.text-gray-500.mb-2.font-bold(for="repeate_password") Repite tu Password 
+                        input#repeate_password.w-full.px-4.py-2.border.border-gray-300.rounded-md.placeholder-gray-400(placeholder="Repite tu Password" type="password" name="repeate_password")
+
+                    div.flex.items-center.justify-between    
+                        a.text-gray-500.text-xs(href="/auth/login") ¿Ya tienes cuenta? Inicia Sesión.
+                        a.text-gray-500.text-xs(href="/auth/forgot-password") Olvidé mi contraseña. 
+                    
+                    input(class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 cursor-pointer" type="submit" value="Crear Cuenta")
