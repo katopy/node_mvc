@@ -1,10 +1,8 @@
 // const express = require('express') --> CommonJS
 import express from 'express'
 import cookieParser from 'cookie-parser'
-import csurf from 'csurf'
 import { doubleCsrf } from 'csrf-csrf'
 import userRoutes from './routes/userRoutes.js'
-import dotenv from 'dotenv'
 import db from './config/db.js'
 
 //Crear la aplicacion
@@ -20,6 +18,7 @@ const { doubleCsrfProtection} = doubleCsrf({
     cookieName: "psifi.x-csrf-token",
     cookieOptions: {
       sameSite: "lax",
+      secure: process.env.NODE_ENV !== 'development',
     },
     getTokenFromRequest: (req) => {
       if (req.is('application/x-www-form-urlencoded') || req.is('multipart/form-data') || (req.get('Content-Type') && req.get('Content-Type').includes('form'))) {
@@ -28,7 +27,6 @@ const { doubleCsrfProtection} = doubleCsrf({
       return req.headers['x-csrf-token'];
     }
   });
-  
 // Habilitar cookie parser
 app.use( cookieParser())
 
