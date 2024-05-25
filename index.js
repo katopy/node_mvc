@@ -4,28 +4,35 @@ import cookieParser from 'cookie-parser'
 import csurf from 'csurf'
 import { doubleCsrf } from 'csrf-csrf'
 import userRoutes from './routes/userRoutes.js'
+import dotenv from 'dotenv'
 import db from './config/db.js'
 
 //Crear la aplicacion
 const app = express()
-
-// csrf configuration
-const { doubleCsrfProtection, generateToken } = doubleCsrf({
-    getSecret: () => "YourSecret", // Replace with your own function to get a secret
-  
-  });
-
-// Habilitar cookie parser
-app.use( cookieParser())
-
-app.use(doubleCsrfProtection);
-
   
 // Habilitar lectura de datos de formularios
 app.use(express.urlencoded({extended: true}))
 
-// Habilitar CSRF
-//app.use(csurf({cookie: true}))
+
+// csrf configuration
+const { doubleCsrfProtection} = doubleCsrf({
+    getSecret: () => process.env.NODE_KEY, 
+    cookieName: "psifi.x-csrf-token",
+    cookieOptions: {
+      sameSite: "lax",
+    },
+    getTokenFromRequest: (req) => {
+      if (req.is('application/x-www-form-urlencoded') || req.is('multipart/form-data') || (req.get('Content-Type') && req.get('Content-Type').includes('form'))) {
+        return req.body._csrf;
+      }
+      return req.headers['x-csrf-token'];
+    }
+  });
+  
+// Habilitar cookie parser
+app.use( cookieParser())
+
+app.use(doubleCsrfProtection);
 
 // Conexion a la base de datos
 try{
