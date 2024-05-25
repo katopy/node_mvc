@@ -15,6 +15,7 @@ const emailRegister = async (data) => {
     const { email, name, token } = data
 
     // Enviar el email
+    // transport - inicia sesion en mailtrap y luego accese al uso de sendMail
     await transport.sendMail({
         from: 'RealEstate.com',
         to: email,
@@ -23,7 +24,7 @@ const emailRegister = async (data) => {
         html:
         `
         <p>Hi ${name}, your account is almost ready, you just need to confirm it with the link:
-        <a href="">Confirm account</a> </p>
+        <a href="${process.env.BACKEND_URL}:${process.env.PORT ?? 3000}/auth/confirm/${token}"> Confirm account</a> </p>
         `
 
     })
