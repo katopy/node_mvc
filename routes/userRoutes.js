@@ -1,5 +1,5 @@
 import express from "express";
-import { formularioLogin, formularioRegister, register, formularioForgotPassword} from "../controllers/usuarioController.js";
+import { formularioLogin, formularioRegister, register, confirm, formularioForgotPassword} from "../controllers/usuarioController.js";
 
 const router = express.Router();
 
@@ -10,6 +10,11 @@ router.get('/register', formularioRegister)
 router.post('/register', register)
 
 router.get('/forgot-password', formularioForgotPassword)
+
+// Luego de enviar el correo, pagina para confirmar cuenta
+// Routing dinamico --> controller
+
+router.get('/confirm/:token', confirm)
 
 
 router.post('/', (req, res) => {

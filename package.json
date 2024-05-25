@@ -26,7 +26,11 @@
   "homepage": "https://github.com/Katopy/node_mvc#readme",
   "dependencies": {
     "2": "^3.0.0",
+    "amqplib": "^0.10.4",
     "bcrypt": "^5.1.1",
+    "cookie-parser": "^1.4.6",
+    "csrf-csrf": "^3.0.6",
+    "csurf": "^1.11.0",
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
     "express-validator": "^7.0.1",
@@ -35,7 +39,8 @@
     "mysql2": "^3.9.7",
     "nodemailer": "^6.9.13",
     "pug": "^3.0.2",
-    "sequelize": "^6.37.3"
+    "sequelize": "^6.37.3",
+    "uuid": "^9.0.1"
   },
   "devDependencies": {
     "autoprefixer": "^10.4.19",
