@@ -10,11 +10,15 @@ const formularioLogin = (req, res) => {
     })
 }
 
-const formularioRegister = (req, res) => {
-    res.render('auth/register',{
-        pagina: 'Crear cuenta'
+const formularioRegister = (req, res) => { // Log the CSRF token
+    const csrfToken = req.csrfToken();
+    console.log('Generated CSRF Token:', csrfToken);
+      res.render('auth/register',{
+        pagina: 'Crear cuenta',
+        csrfToken: csrfToken,
     })
 }
+
 const register = async (req, res) => {
     // Validacion
     await check('name').notEmpty().withMessage('The name cannot be empty.').run(req)
@@ -80,6 +84,36 @@ const register = async (req, res) => {
 
 }
 
+// Funcion que confirma cuenta
+const confirm = async (req, res) => {
+    
+    const { token } = req.params;
+
+    // Verificar si el token es valido
+    const user = await User.findOne({ where: {token}})
+
+    console.log(user)
+
+    if(!user){
+        return res.render('auth/confirm-account',{
+            pagina: 'Error confirming your account X.X',
+            message: 'There are some issues while confirming your account, try again.',
+            error: true
+        })
+    }
+
+    // Confirmar la cuenta
+    user.token = null;
+    user.confirmed = true;
+    await user.save()
+
+    res.render('auth/confirm-account',{
+        pagina: 'Account confirmed!',
+        message: 'The account has been sucessfully confirmed :)'
+    })
+
+}   
+
 const formularioForgotPassword = (req, res) =>{
     res.render('auth/forgot-password',{
         pagina: 'Recuperar Password'
@@ -90,5 +124,6 @@ export {
     formularioLogin,
     formularioRegister,
     register,
+    confirm,
     formularioForgotPassword
 }
