@@ -30,6 +30,35 @@ const emailRegister = async (data) => {
     })
 }
 
+
+const emailForgotPassword = async(data) => {
+    const transport = nodemailer.createTransport({
+        host: process.env.EMAIL_HOST,
+        port: process.env.EMAIL_PORT,
+        auth:{
+            user: process.env.EMAIL_USER,
+            pass: process.env.EMAIL_PASS
+        }
+    });
+
+    const {email, name, token} = data
+    
+    await transport.sendMail({
+        from: 'RealEstate.com',
+        to: email,
+        subject: 'Update your password in RealEstate',
+        text: 'Update your password to continue',
+        html:
+        `
+        <p>Hi ${name}, you can update your password, you just need to update it with the link:
+        <a href="${process.env.BACKEND_URL}:${process.env.PORT ?? 3000}/auth/forgot-password/${token}"> Update</a> </p>
+        `
+
+    })
+}
+
+
 export{
-    emailRegister
+    emailRegister, 
+    emailForgotPassword
 }
