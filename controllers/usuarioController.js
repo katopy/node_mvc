@@ -1,7 +1,7 @@
 import { check, validationResult} from 'express-validator'
 import User from '../models/User.js'
 import { generateId } from '../helpers/tokens.js'
-import { emailRegister } from '../helpers/emails.js'
+import { emailRegister, emailForgotPassword } from '../helpers/emails.js'
 
 
 const formularioLogin = (req, res) => {
@@ -115,15 +115,78 @@ const confirm = async (req, res) => {
 }   
 
 const formularioForgotPassword = (req, res) =>{
+    const csrfToken = req.csrfToken();
     res.render('auth/forgot-password',{
-        pagina: 'Recuperar Password'
+        pagina: 'Recuperar Password',
+        csrfToken: csrfToken,
     })
 }
+
+// Post function
+const resetPassword = async (req, res) => {
+    // Validation
+    await check('email').isEmail().withMessage('Invalid email.').run(req)
+    
+    let resultado = validationResult(req)
+
+    if(!resultado.isEmpty()){
+        const csrfToken = req.csrfToken();
+        return res.render('auth/forgot-password',{
+            pagina: 'Recover your account',
+            errors: resultado.array(),
+            csrfToken: csrfToken
+      })
+    }
+
+    // Finding the user by email
+
+    const {email} = req.body;
+
+    const user = await User.findOne({where : {email}})
+
+    // When the User doesn't exist
+    if(!user){
+        return res.render('auth/forgot-password',{
+            pagina: 'Recover your account',
+            errors: [{msg: 'The user with this email does not exist'}]
+        })
+    }
+
+    // Generar token y enviar el email
+    user.token = generateId();
+    await user.save();
+
+    // Enviar email
+
+    emailForgotPassword({
+        email: user.email,
+        name: user.name,
+        token: user.token
+    })
+
+    // Renderizar mensaje
+    res.render('templates/message', {
+        pagina: 'Update your password',
+        message: 'We have sent an email to update the password'
+    })
+}
+
+const confirmToken = (req, res) => {
+
+}
+
+const newPassword = (req, res) => {
+    
+}
+
 
 export {
     formularioLogin,
     formularioRegister,
     register,
     confirm,
-    formularioForgotPassword
+    formularioForgotPassword,
+    resetPassword,
+    confirmToken,
+    newPassword
 }
