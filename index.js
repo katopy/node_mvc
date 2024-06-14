@@ -27,7 +27,8 @@ const { doubleCsrfProtection} = doubleCsrf({
       return req.headers['x-csrf-token'];
     }
   });
-// Habilitar cookie parser
+  
+// Enable cookie parser
 app.use( cookieParser())
 
 app.use(doubleCsrfProtection);
