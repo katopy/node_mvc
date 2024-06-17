@@ -3,6 +3,7 @@ import express from 'express'
 import cookieParser from 'cookie-parser'
 import { doubleCsrf } from 'csrf-csrf'
 import userRoutes from './routes/userRoutes.js'
+import propertiesRoutes from './routes/propertiesRoutes.js'
 import db from './config/db.js'
 
 //Crear la aplicacion
@@ -52,6 +53,8 @@ app.use(express.static('public'))
 
 // Routing - cualquier solicitud que comience con /auth será manejada por las rutas definidas en userRoutes.
 app.use('/auth', userRoutes)
+app.use('/', propertiesRoutes)
+
 
 //Definir puerto y arrancar la app
 const port = process.env.PORT || 3000;
