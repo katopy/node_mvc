@@ -1,25 +1,88 @@
 import { check, validationResult} from 'express-validator'
 import User from '../models/User.js'
-import { generateId } from '../helpers/tokens.js'
+import { generateId, generateJWT } from '../helpers/tokens.js'
+import bcrypt from 'bcrypt'
 import { emailRegister, emailForgotPassword } from '../helpers/emails.js'
 
 
 const formularioLogin = (req, res) => {
     res.render('auth/login',{
-        pagina: 'Iniciar Sesión'
+        pagina: 'Iniciar Sesión',
+        csrfToken: req.csrfToken()
     })
 }
 
+const authenticate = async (req, res) => {
+
+    // Validate
+    await check('email').isEmail().withMessage('Invalid email').run(req)
+    await check('password').notEmpty().withMessage('The password can\'t be empty').run(req)
+
+    let result = validationResult(req)
+    
+    if(!result.isEmpty()){
+        return res.render('auth/login', {
+            pagina: 'Log in',
+            errors: result.array(),
+            csrfToken: req.csrfToken()
+        })
+    }
+
+    // Verify if user exists
+    const {email, password} = req.body
+
+    const user = await User.findOne({where: {email}})
+    if(!user){
+        return res.render('auth/login', {
+            pagina: 'Log in',
+            errors: [{msg: 'The user doesn\'t exist'}],
+            csrfToken: req.csrfToken()
+        })
+
+    }
+
+    // Verify the user confirmed the account
+    if(!user.confirmed){ // user exists but is not confirmed
+        return res.render('auth/login', {
+            pagina: 'Log in',
+            errors: [{msg: 'Your account has not been confirmed. Please check your email inbox'}],
+            csrfToken: req.csrfToken()
+        })
+    }
+
+    // Check password
+    if(!user.verifyPassword(password)){
+        return res.render('auth/login', {
+            pagina: 'Log in',
+            errors: [{msg: 'The password is incorrect'}],
+            csrfToken: req.csrfToken()
+        })
+    }
+
+    // Authenticate the user 
+    const token = generateJWT({id: user.id, name: user.name})
+    console.log(token)
+
+    // Store token in cookie
+
+    return res.cookie('_token', token, {
+        httpOnly: true,
+        //secure: true
+    }).redirect('/my-properties')
+}
+
+
+
+
 const formularioRegister = (req, res) => { // Log the CSRF token
-    const csrfToken = req.csrfToken();
-    console.log('Generated CSRF Token:', csrfToken);
       res.render('auth/register',{
         pagina: 'Crear cuenta',
-        csrfToken: csrfToken,
+        csrfToken: req.csrfToken()
     })
 }
 
 const register = async (req, res) => {
+
     // Validacion
     await check('name').notEmpty().withMessage('The name cannot be empty.').run(req)
     await check('email').isEmail().withMessage('Invalid email.').run(req)
@@ -79,7 +142,8 @@ const register = async (req, res) => {
     // Mostrar mensaje que confirme cuenta
     res.render('templates/message',{
         pagina: 'The account has been created!',
-        message: 'We have sent an email to confirm your account'
+        message: 'We have sent an email to confirm your account',
+        csrfToken: req.csrfToken()
     })
 
 }
@@ -115,10 +179,9 @@ const confirm = async (req, res) => {
 }   
 
 const formularioForgotPassword = (req, res) =>{
-    const csrfToken = req.csrfToken();
     res.render('auth/forgot-password',{
         pagina: 'Recuperar Password',
-        csrfToken: csrfToken,
+        csrfToken: req.csrfToken()
     })
 }
 
@@ -134,7 +197,7 @@ const resetPassword = async (req, res) => {
         return res.render('auth/forgot-password',{
             pagina: 'Recover your account',
             errors: resultado.array(),
-            csrfToken: csrfToken
+            csrfToken: req.csrfToken()
       })
     }
 
@@ -171,17 +234,74 @@ const resetPassword = async (req, res) => {
     })
 }
 
-const confirmToken = (req, res) => {
+const confirmToken  = async (req, res) => {
+
+    const { token } = req.params;
+
+    const user = await User.findOne({where: {token}})
+
+    if(!user){
+        
+        return res.render('auth/confirm-account', {
+            pagina: 'Reset your password',
+            message: 'There was an issue while validating your information.',
+            error: true
+        })
+    }
+
+    // Form to reset password
+    res.render('auth/reset-password', {
+        pagina: 'Reset your password',
+        csrfToken: req.csrfToken()
+
+    }
+
+    )
 
 }
 
-const newPassword = (req, res) => {
+const newPassword =  async(req, res) => {
+    // Validate the password
+    await check('password').isLength({ min: 6 }).withMessage('The password must be at least 6 characters long').run(req)
+
+    let result = validationResult(req)
+
+    if(!result.isEmpty()){
+        return res.render('auth/reset-password', {
+            pagina: 'Update password',  
+            errors: result.array(),
+            csrfToken: req.csrfToken()
+
+        })
+    }
+
+    const { token } = req.params
+    const {password} = req.body    
+    
+    // Who is doing the reset
+
+    const user = await User.findOne({where: {token}})
+
+    // Hash password
+
+    const salt = await bcrypt.genSalt(10)
+    user.password = await bcrypt.hash(password, salt);
+    user.token = null 
+
+    await user.save();
+
+    res.render('auth/confirm-account', {
+        pagina: 'Password Sucessfully changed!',
+        message: 'Password has been saved.'
+    })
+
     
 }
 
 
 export {
     formularioLogin,
+    authenticate,
     formularioRegister,
     register,
     confirm,
