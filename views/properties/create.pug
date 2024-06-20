@@ -57,8 +57,17 @@ block contenido
                                 - var n = 1;
                                     while n < 5
                                         option(value=n) #{n++}
+                    div.border-gray-200.border-t.py-5.space-y-5
+                    h3.text-lg.leading-6.font-medium.text-gray-900 Location
+                    p.text-gray-600 Select the location of the property
+                        #map.h-96
 
-                    #map.h-96
+                        div
+                            p.street
+                        
+                        input(type="hidden" class="street" id="street")
+                        input(type="hidden" class="lat" id="lat")
+                        input(type="hidden" class="lng" id="lng")
                     
 block scripts 
     script(src="https://unpkg.com/leaflet@1.8.0/dist/leaflet.js")
