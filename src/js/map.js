@@ -30,6 +30,14 @@
         // Name of street
         geocodeService.reverse().latlng(position, 13).run(function(error, result){
         marker.bindPopup(result.address.LongLabel)
+
+        console.log(result)
+
+        // Fill inputs
+        document.querySelector('.street').textContent = result?.address?.Address ?? '';
+        document.querySelector('#street').textContent = result?.address?.Address ?? '';
+        document.querySelector('#lat').textContent = result?.latlng?.lat ?? '';
+        document.querySelector('#lng').textContent = result?.latlng?.lng ?? '';
         })
 
     })
